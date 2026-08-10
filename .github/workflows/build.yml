@@ -1,4 +1,4 @@
-name: Build FFmpeg (ARMv5 Static, No Interpreter)
+name: Build FFmpeg (ARMv5 Static, V4L2 + H.264 + RTSP)
 
 on:
   push:
@@ -14,10 +14,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi make
 
-      - name: 下载 FFmpeg 源码（从 GitHub 镜像）
+      - name: 下载 FFmpeg 源码
         run: git clone --depth 1 https://github.com/FFmpeg/FFmpeg.git ffmpeg_src
 
-      - name: 配置编译选项（极简静态编译，无动态链接器依赖）
+      - name: 配置编译选项（启用 V4L2 输入 + H.264 编码 + RTSP 输出）
         run: |
           cd ffmpeg_src
           ./configure \
@@ -29,14 +29,14 @@ jobs:
             --disable-doc \
             --disable-ffplay \
             --disable-ffprobe \
-            --disable-avdevice \
-            --disable-network \
             --disable-encoders \
             --disable-decoders \
             --enable-decoder=h264 \
             --enable-encoder=rawvideo \
+            --enable-encoder=h264 \
             --enable-muxer=rtsp \
             --enable-demuxer=v4l2 \
+            --enable-indev=v4l2 \
             --enable-protocol=file,rtsp,tcp \
             --disable-bzlib \
             --disable-zlib \
@@ -52,5 +52,5 @@ jobs:
       - name: 上传编译好的二进制文件
         uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg-armv5-static
+          name: ffmpeg-armv5-v4l2-rtsp
           path: ffmpeg_src/ffmpeg
