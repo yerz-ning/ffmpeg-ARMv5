@@ -1,4 +1,4 @@
-name: Build FFmpeg (ARMv5 Static)
+name: Build FFmpeg (ARMv5 Static, No Interpreter)
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
       - name: 下载 FFmpeg 源码（从 GitHub 镜像）
         run: git clone --depth 1 https://github.com/FFmpeg/FFmpeg.git ffmpeg_src
 
-      - name: 配置编译选项（极简静态编译）
+      - name: 配置编译选项（极简静态编译，无动态链接器依赖）
         run: |
           cd ffmpeg_src
           ./configure \
@@ -41,7 +41,8 @@ jobs:
             --disable-bzlib \
             --disable-zlib \
             --disable-libx264 \
-            --extra-cflags="-static -Os -march=armv5te -mtune=arm926ej-s"
+            --extra-cflags="-static -Os -march=armv5te -mtune=arm926ej-s" \
+            --extra-ldflags="-static -no-pie"
 
       - name: 开始编译
         run: |
