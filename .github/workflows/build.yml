@@ -14,7 +14,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi make
 
-      - name: 下载 FFmpeg 源码（从 GitHub 镜像，极速稳定）
+      - name: 下载 FFmpeg 源码（从 GitHub 镜像）
         run: git clone --depth 1 https://github.com/FFmpeg/FFmpeg.git ffmpeg_src
 
       - name: 配置编译选项（极简静态编译）
@@ -30,7 +30,6 @@ jobs:
             --disable-ffplay \
             --disable-ffprobe \
             --disable-avdevice \
-            --disable-postproc \
             --disable-network \
             --disable-encoders \
             --disable-decoders \
@@ -44,7 +43,7 @@ jobs:
             --disable-libx264 \
             --extra-cflags="-static -Os -march=armv5te -mtune=arm926ej-s"
 
-      - name: 开始编译（约 3-5 分钟）
+      - name: 开始编译
         run: |
           cd ffmpeg_src
           make -j2
