@@ -1,0 +1,56 @@
+name: Build FFmpeg (ARMv5 Static)
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 安装 ARMv5 交叉编译工具链
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi make
+
+      - name: 下载 FFmpeg 源码
+        run: git clone --depth 1 https://git.ffmpeg.org/ffmpeg.git ffmpeg_src
+
+      - name: 配置编译选项（极简静态编译）
+        run: |
+          cd ffmpeg_src
+          ./configure \
+            --arch=arm \
+            --target-os=linux \
+            --cross-prefix=arm-linux-gnueabi- \
+            --enable-static \
+            --disable-shared \
+            --disable-doc \
+            --disable-ffplay \
+            --disable-ffprobe \
+            --disable-avdevice \
+            --disable-postproc \
+            --disable-network \
+            --disable-encoders \
+            --disable-decoders \
+            --enable-decoder=h264 \
+            --enable-encoder=rawvideo \
+            --enable-muxer=rtsp \
+            --enable-demuxer=v4l2 \
+            --enable-protocol=file,rtsp,tcp \
+            --disable-bzlib \
+            --disable-zlib \
+            --disable-libx264 \
+            --extra-cflags="-static -Os -march=armv5te -mtune=arm926ej-s"
+
+      - name: 开始编译（约 3-5 分钟）
+        run: |
+          cd ffmpeg_src
+          make -j2
+
+      - name: 上传编译好的二进制文件
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-armv5-static
+          path: ffmpeg_src/ffmpeg
