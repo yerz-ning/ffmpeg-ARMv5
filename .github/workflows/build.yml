@@ -14,8 +14,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi make
 
-      - name: 下载 FFmpeg 源码
-        run: git clone --depth 1 https://git.ffmpeg.org/ffmpeg.git ffmpeg_src
+      - name: 下载 FFmpeg 源码（从 GitHub 镜像，极速稳定）
+        run: git clone --depth 1 https://github.com/FFmpeg/FFmpeg.git ffmpeg_src
 
       - name: 配置编译选项（极简静态编译）
         run: |
